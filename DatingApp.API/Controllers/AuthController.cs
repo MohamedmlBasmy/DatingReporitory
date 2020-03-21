@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
 using DatingApp.API.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -43,32 +46,33 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserDTO userDto)
         {
-            //we want to generte token
-            // Microsoft.IdentityModel.Tokens.securityTokens;
-            var loggedinuser = await _repo.Login(userDto.Username, userDto.Password);
-            if (loggedinuser == null)
+            var IsUserExist = await _repo.Login(userDto.Username, userDto.Password);
+            if (IsUserExist == null)
             {
-                return Unauthorized("User Not Authorized");
+                return NotFound("User Not Found");
             }
-
-            var identity = new []{
-                new Claim(ClaimTypes.NameIdentifier.ToString(), userDto.Password),
-                new Claim(ClaimTypes.Name.ToString(), userDto.Username)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
-            SigningCredentials creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDiscriptior = new SecurityTokenDescriptor{
-                Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = creds,
-                Subject = new ClaimsIdentity(identity)
-            };
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            
-            var token =  jwtSecurityTokenHandler.CreateToken(tokenDiscriptior);
-
-            return Ok(jwtSecurityTokenHandler.WriteToken(token));
+            else
+            {
+                SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+                SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+                var claimsIdentity = new[] 
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userDto.Password),
+                    new Claim(ClaimTypes.Name, userDto.Username),
+                };
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Expires = DateTime.Now.AddDays(1),
+                    SigningCredentials = credentials,
+                    Subject = new ClaimsIdentity(claimsIdentity)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token =  tokenHandler.CreateToken(tokenDescriptor);
+                return Ok(new
+                {
+                    token = tokenHandler.WriteToken(token)
+                });
+            }
         }
     }
 }

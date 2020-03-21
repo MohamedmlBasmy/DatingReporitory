@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace DatingApp.API.DTOs
 {
     public class UserDTO

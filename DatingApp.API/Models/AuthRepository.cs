@@ -45,7 +45,12 @@ namespace DatingApp.API.Models
         public async Task<User> Register(User user, string password)
         {
             byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            using (var pas = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = pas.Key;
+                passwordHash = pas.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;

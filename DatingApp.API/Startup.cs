@@ -34,12 +34,12 @@ namespace DatingApp.API
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddCors();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options=>{
                 options.TokenValidationParameters = new TokenValidationParameters{
+                    ValidateIssuer = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
-                    ValidateIssuer = false, //because our Issuer is localhost
-                    ValidateAudience = false //because our audiences are localhost
+                    ValidateAudience = false
                 };
             });
             services.AddScoped<IAuthRepository, AuthRepository>();
@@ -53,13 +53,12 @@ namespace DatingApp.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            //app.UseHttpsRedirection();
+            
+            app.UseCors(x=> x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());//app.UseHttpsRedirection();
             app.UseRouting();
-
-            //app.UseAuthorization();
             app.UseAuthentication();
-            app.UseCors(x=> x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseAuthorization();
+            
             
             app.UseEndpoints(endpoints =>
             {
