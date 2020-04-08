@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
 using DatingApp.API.Models;
@@ -21,9 +22,12 @@ namespace DatingApp.API.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        private readonly IMapper mapper;
+
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _config = config;
+            this.mapper = mapper;
             _repo = repo;
         }
 
@@ -35,12 +39,16 @@ namespace DatingApp.API.Controllers
                 return BadRequest("User Exists");
             }
             userDTO.Username = userDTO.Username.ToLower();
-            var userToCreate = new User()
-            {
-                Username = userDTO.Username
-            };
-            await _repo.Register(userToCreate, userDTO.Password);
-            return StatusCode(201);
+            var userToCreate = this.mapper.Map<User>(userDTO);
+            // var userToCreate = new User()
+            // {
+            //     Username = userDTO.Username
+            // };
+            var createdUser = await _repo.Register(userToCreate, userDTO.Password);
+
+            var userToReturn = this.mapper.Map<User>(createdUser);
+
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, userToReturn);
         }
 
         [HttpPost("login")]
@@ -55,9 +63,9 @@ namespace DatingApp.API.Controllers
             {
                 SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
                 SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-                var claimsIdentity = new[] 
+                var claimsIdentity = new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userDto.Password),
+                    new Claim(ClaimTypes.NameIdentifier, IsUserExist.Id.ToString()),
                     new Claim(ClaimTypes.Name, userDto.Username),
                 };
                 var tokenDescriptor = new SecurityTokenDescriptor
@@ -67,7 +75,7 @@ namespace DatingApp.API.Controllers
                     Subject = new ClaimsIdentity(claimsIdentity)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var token =  tokenHandler.CreateToken(tokenDescriptor);
+                var token = tokenHandler.CreateToken(tokenDescriptor);
                 return Ok(new
                 {
                     token = tokenHandler.WriteToken(token)

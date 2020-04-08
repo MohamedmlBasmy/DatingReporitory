@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DatingApp.API.Models
+namespace DatingApp.API.Data
 {
     public class AuthRepository : IAuthRepository
     {
@@ -17,10 +18,12 @@ namespace DatingApp.API.Models
         public async Task<User> Login(string username, string password)
         {
             var loggedinUser = await _dataContext.Users.FirstOrDefaultAsync(x => x.Username == username);
-            if(loggedinUser == null){
+            if (loggedinUser == null)
+            {
                 return null;
             }
-            if(!VerifyPasswordHash(password, loggedinUser.PasswordHash, loggedinUser.PasswordSalt)){
+            if (!VerifyPasswordHash(password, loggedinUser.PasswordHash, loggedinUser.PasswordSalt))
+            {
                 return null;
             }
             return loggedinUser;
@@ -30,15 +33,15 @@ namespace DatingApp.API.Models
         {
             using (var pas = new System.Security.Cryptography.HMACSHA512(passwordSalt))
             {
-               var computedHash = pas.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-               for (int i = 0; i < computedHash.Length; i++)
-               {
-                   if (computedHash[i] != passwordHash[i])
-                   {
-                       return false;
-                   }
-               }
-               return true;
+                var computedHash = pas.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != passwordHash[i])
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
 
@@ -72,9 +75,10 @@ namespace DatingApp.API.Models
 
         public async Task<bool> UsersExists(string username)
         {
-             if(await _dataContext.Users.AnyAsync(x=>x.Username == username)){
-                 return true;
-             }
+            if (await _dataContext.Users.AnyAsync(x => x.Username == username))
+            {
+                return true;
+            }
             else return false;
         }
     }

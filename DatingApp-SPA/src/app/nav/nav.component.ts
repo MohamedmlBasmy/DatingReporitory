@@ -3,6 +3,8 @@ import { AuthService } from '../service/auth.service';
 import { error } from '@angular/compiler/src/util';
 import { from } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Router } from '@angular/router';
+import { Alertifyjs } from '../service/alertify.service';
 
 @Component({
   selector: "app-nav",
@@ -10,18 +12,19 @@ import { JwtHelperService } from '@auth0/angular-jwt';
   styleUrls: ["./nav.component.css"]
 })
 export class NavComponent implements OnInit {
-  constructor(public authService: AuthService) { }
+  constructor(public authService: AuthService, private router: Router, private alertify: Alertifyjs) { }
   model: any = {};
   val: any;
   ngOnInit() {
     // this.getData();
 
+    //console.log(this.authService.username);
   }
 
   login() {
     this.authService.login(this.model).subscribe(
       response => {
-        console.log("logged in successfully");
+        this.alertify.message("Logged in Successfully");
       }, error => {
         console.log("faild to login ");
       }
@@ -44,5 +47,6 @@ export class NavComponent implements OnInit {
 
   logout() {
     localStorage.removeItem("token");
+    this.router.navigate(['/']);
   }
 }

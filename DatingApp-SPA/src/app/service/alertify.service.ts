@@ -11,7 +11,7 @@ export class Alertifyjs {
    *
    */
   constructor() {
-
+ 
   }
 
   confirm(message: string, ok: () => any) {

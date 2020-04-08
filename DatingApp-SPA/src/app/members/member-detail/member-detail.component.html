@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card mt-4">
+                <img src="{{userDetails.photoUrl || '../../../../../assets/user.jpg'}}" alt="{{userDetails.knownAs}}" class="card-img-top img-thumbnail">
+                <div class="card-body ml-2 mr-2">
+                    <div>
+                        <strong>Location:</strong>
+                        <p>{{userDetails.city}}, {{userDetails.country}}</p>
+                    </div>
+                    <div>
+                        <strong>Age</strong>
+                        <p>{{userDetails.age}}</p>
+                    </div>
+                    <div>
+                        <strong>Last Active</strong>
+                        <p>{{userDetails.lastActive | timeAgo}}</p>
+                    </div>
+
+                    <div>
+                        <strong>Member Since</strong>
+                        <p>{{userDetails.created | date}}</p>
+                    </div>
+                </div>
+                <div class="card footer">
+                    <div class="btn-group d-flex">
+                        <button class="btn btn-primary w-100">Like</button>
+                        <button class="btn btn-success w-100">Message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 mt-4">
+            <div class="tab-panel">
+                <tabset class="member-tabset">
+                    <tab heading="About {{userDetails?.username}}">
+                        <h4>Description</h4>
+                        <p>{{userDetails.introduction}}</p>
+                        <h4>Looking For</h4>
+                        <p>{{userDetails.lookingFor}}</p>
+                    </tab>
+                    <tab heading="Interests">
+                        <h4>Interests</h4>
+                        <p>{{userDetails.interests}}</p>
+                    </tab>
+                    <tab heading="Photos">
+                        <h4>Photos</h4>
+                    </tab>
+                    <tab heading="Messages">
+                        <h4>Messages</h4>
+                    </tab>
+                </tabset>
+            </div>
+        </div>
+    </div>
+</div>

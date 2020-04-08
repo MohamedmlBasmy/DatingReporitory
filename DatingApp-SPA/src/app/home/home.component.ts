@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -11,6 +12,7 @@ export class HomeComponent implements OnInit {
   registerMode = false;
   values: any;
   constructor(private httpClient:HttpClient) { }
+  form: FormGroup;
 
   ngOnInit() {
   }
