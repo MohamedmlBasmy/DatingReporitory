@@ -28,8 +28,11 @@ import { MembersEditResolver } from './_resolvers/members-edit.resolver';
 import { AuthService } from './service/auth.service';
 import { UserService } from './service/user.service';
 import { PerventClose } from './_guards/preventClose.guard';
-import {TimeAgoPipe} from 'time-ago-pipe';
-import { TimeagoModule, TimeagoPipe } from 'ngx-timeago';
+import { PaginationModule } from 'ngx-bootstrap';
+import { listsResolver } from './_resolvers/lists.resolver';
+import { MessagesResolver } from './_resolvers/messages.resolver';
+import { TimeagoModule } from 'ngx-timeago';
+import { MembersMessagesComponent } from './members/members-messages/members-messages.component';
 
 export function getToken() {
    return localStorage.getItem('token');
@@ -47,7 +50,7 @@ export function getToken() {
       MemberCardComponent,
       MemberDetailComponent,
       MemberEditComponent,
-      TimeAgoPipe
+      MembersMessagesComponent
    ],
    imports: [
       BrowserModule,
@@ -57,14 +60,13 @@ export function getToken() {
       BrowserAnimationsModule,
       RouterModule.forRoot(routes),
       TabsModule.forRoot(),
-      
+      PaginationModule.forRoot(),
       BrowserAnimationsModule,
       BsDatepickerModule.forRoot(),
-      
+      TimeagoModule.forRoot(),
       JwtModule.forRoot({
-         config: {
-            tokenGetter: getToken,
-            whitelistedDomains: [environment.domainUrl]
+         config : {
+            tokenGetter : getToken
          }
       }),
       ReactiveFormsModule
@@ -75,7 +77,9 @@ export function getToken() {
       MembersEditResolver,
       AuthService,
       UserService,
-      PerventClose
+      PerventClose,
+      listsResolver,
+      MessagesResolver
    ],
    bootstrap: [
       AppComponent

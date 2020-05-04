@@ -30,7 +30,7 @@ export class RegisterComponent implements OnInit {
     this.bsConfig = Object.assign({}, { containerClass: this.colorTheme, isAnimated: true });
 
     this.registrationForm = new FormGroup({
-      gender: new FormControl('', Validators.required),
+      gender: new FormControl('male', Validators.required),
       username: new FormControl('', Validators.required),
       knownAs: new FormControl('', Validators.required),
       email: new FormControl('', Validators.required),
@@ -66,15 +66,10 @@ export class RegisterComponent implements OnInit {
     if (this.registrationForm.valid) {
         var user = Object.assign({}, this.registrationForm.value);
         this.AuthService.register(user).subscribe(() => {
-        this.notifyService.success()
+        this.route.navigate['/members'];
       }, () => {
         this.notifyService.error("Make sure that you run your api first");
-      }, () => {
-        this.AuthService.login(user).subscribe(() => {
-          this.route.navigate(['/members']);
-          this.notifyService.message("Successfull Login");
-        })
-      })
+      });
     }
   }
 

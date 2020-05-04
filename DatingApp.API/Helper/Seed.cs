@@ -10,7 +10,7 @@ namespace DatingApp.API.Models
     {
         public static void SeedUsers(DataContext dataContext)
         {
-            var allUsersTxt = File.ReadAllText(@"C:\Users\Administrator\Project\DatingApp.API\Helper\UsersSeed.json");
+            var allUsersTxt = File.ReadAllText(@"D:\M basmy\Project\DatingApp.API\Helper\UsersSeed.json");
             var users = JsonConvert.DeserializeObject<List<User>>(allUsersTxt);
             foreach (var user in users)
             {

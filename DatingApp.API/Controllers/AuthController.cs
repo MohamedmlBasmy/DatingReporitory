@@ -40,10 +40,7 @@ namespace DatingApp.API.Controllers
             }
             userDTO.Username = userDTO.Username.ToLower();
             var userToCreate = this.mapper.Map<User>(userDTO);
-            // var userToCreate = new User()
-            // {
-            //     Username = userDTO.Username
-            // };
+
             var createdUser = await _repo.Register(userToCreate, userDTO.Password);
 
             var userToReturn = this.mapper.Map<User>(createdUser);
