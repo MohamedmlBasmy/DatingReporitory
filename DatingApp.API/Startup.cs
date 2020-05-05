@@ -65,6 +65,12 @@ namespace DatingApp.API
                 };
             });
 
+            // services.AddAuthentication(JwtBearerDefaults.JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+            //     options.TokenValidationParameters = new TokenValidationParameters{
+
+            //     }
+            // })
+
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
             
