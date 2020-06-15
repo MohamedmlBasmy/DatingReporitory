@@ -45,6 +45,7 @@ namespace DatingApp.API.Controllers
             {
                 userParams.Gender = currentLoggedInUser.Gender == "male" ? "female" : "male";
             }
+            
             PagedList<User> users = await datingRepository.GetUsers(userParams);
             Response.AddPaginationHeader(users.PageNumber, users.PageSize, users.TotalCount, users.TotalPages);
             var usersToReturn = mapper.Map<IEnumerable<UserList>>(users);
