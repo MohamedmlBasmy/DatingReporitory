@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using DatingApp.API.Extentions;
 using Microsoft.AspNetCore.Http;
 using FluentValidation.AspNetCore;
+using DatingApp.API.Filters;
 
 namespace DatingApp.API
 {
@@ -41,10 +42,12 @@ namespace DatingApp.API
             services.AddDbContext<DataContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
-            
-            services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
-            services.AddControllers().AddNewtonsoftJson(opt =>
+            services.AddControllers(
+                options => options.Filters.Add(new ValidationFilter())
+            )
+            .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
+            .AddNewtonsoftJson(opt =>
             {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });

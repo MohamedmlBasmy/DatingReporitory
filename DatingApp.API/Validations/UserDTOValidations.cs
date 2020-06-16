@@ -8,7 +8,7 @@ namespace DatingApp.API.Validations
         public UserDTOValidations()
         {
             RuleFor(x => x.Username).NotNull();
-            RuleFor(x=>x.Password).NotEmpty().NotNull();
+            RuleFor(x => x.Password).NotEmpty().NotNull();
         }
     }
 }
