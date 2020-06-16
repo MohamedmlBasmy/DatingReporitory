@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DatingApp.API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -49,8 +49,12 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserDTO userDto)
+        public async Task<IActionResult> Login([FromBody]UserDTO userDto)
         {
+            if (!ModelState.IsValid)
+            {
+                
+            }
             var IsUserExist = await _repo.Login(userDto.Username, userDto.Password);
             if (IsUserExist == null)
             {
