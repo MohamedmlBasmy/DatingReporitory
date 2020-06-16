@@ -39,18 +39,21 @@ namespace DatingApp.API
 
             //services.AddDbContext<DataContext>(ServiceLifetime.Transient);
 
-            services.AddDbContext<DataContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-            );
-
+            services.AddScoped<ValidationFilter>();
+            
             services.AddControllers(
-                options => options.Filters.Add(new ValidationFilter())
+               // options => options.Filters.Add(new ValidationFilter())
             )
             .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
             .AddNewtonsoftJson(opt =>
             {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+
+            services.AddDbContext<DataContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            );
+
             //services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
