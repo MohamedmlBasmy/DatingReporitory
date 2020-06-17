@@ -18,6 +18,7 @@ using DatingApp.API.Extentions;
 using Microsoft.AspNetCore.Http;
 using FluentValidation.AspNetCore;
 using DatingApp.API.Filters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DatingApp.API
 {
@@ -39,15 +40,36 @@ namespace DatingApp.API
 
             //services.AddDbContext<DataContext>(ServiceLifetime.Transient);
 
-            services.AddScoped<ValidationFilter>();
-            
-            services.AddControllers(
-               // options => options.Filters.Add(new ValidationFilter())
-            )
-            .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
-            .AddNewtonsoftJson(opt =>
+            //services.AddScoped<ValidationFilter>();
+
+            //services.AddMvc(opt => opt.Filters.Add<ValidationFilter>()).AddFluentValidation(f => f.RegisterValidatorsFromAssemblyContaining<Startup>());
+
+            //services.AddMvc(options =>
+            //    {
+            //        options.Filters.Add<ValidationFilter>();
+            //    })
+            //.AddFluentValidation(mvcConfiguration => mvcConfiguration.RegisterValidatorsFromAssemblyContaining<Startup>())
+            //.AddNewtonsoftJson(opt =>
+            //{
+            //    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            //});
+            //services.AddScoped<ValidationFilter>();
+
+            services
+                .AddControllers(options =>
+                {
+                    options.EnableEndpointRouting = false;
+                    options.Filters.Add<ValidationFilter>();
+                })
+                .AddFluentValidation(mvcConfiguration => mvcConfiguration.RegisterValidatorsFromAssemblyContaining<Startup>())
+                .AddNewtonsoftJson(opt =>
             {
-                opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+               // opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
             });
 
             services.AddDbContext<DataContext>(
@@ -58,7 +80,6 @@ namespace DatingApp.API
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddCors();
-
 
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
 
@@ -82,7 +103,7 @@ namespace DatingApp.API
 
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
-            
+
             //services.AddTransient<LastActive>();
         }
 
@@ -124,7 +145,7 @@ namespace DatingApp.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapFallbackToController("Index","Fallback");
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }

@@ -6,35 +6,40 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DatingApp.API.Filters
 {
-    public class ValidationFilter : IAsyncActionFilter
+    public class ValidationFilter :  IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (!context.ModelState.IsValid)
             {
-                var errors = context.ModelState
-                .Where(x=>x.Value.Errors.Count > 0)
-                .ToDictionary(n=>n.Key, v=>v.Value.Errors.Select(msg => msg.ErrorMessage)).ToArray();
+                var errorsInModelState = context.ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(x => x.ErrorMessage)).ToArray();
 
                 var errorResponse = new ErrorResponse();
 
-                foreach (var error in errors)
+                foreach (var error in errorsInModelState)
                 {
-                    foreach (var errorMsg in error.Value)
+                    foreach (var subError in error.Value)
                     {
                         var errorModel = new ErrorModel
                         {
                             FieldName = error.Key,
-                            Message = errorMsg
+                            Message = subError
                         };
+
                         errorResponse.Errors.Add(errorModel);
                     }
                 }
+
                 context.Result = new BadRequestObjectResult(errorResponse);
                 return;
             }
 
             await next();
+
+            // after controller
         }
+
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.DTOs;
+using DatingApp.API.Filters;
 using DatingApp.API.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,6 @@ using Microsoft.IdentityModel.Tokens;
 namespace DatingApp.API.Controllers
 {
     //[Authorize]
-    [ServiceFilter(typeof(ValidationAttribute))]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -50,8 +50,10 @@ namespace DatingApp.API.Controllers
             return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, userToReturn);
         }
 
+        //[ServiceFilter(typeof(ValidationFilter))]
+        //[ValidationFilter]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]UserDTO userDto)
+        public async Task<IActionResult> Login(UserDTO userDto)
         {
             var IsUserExist = await _repo.Login(userDto.Username, userDto.Password);
             if (IsUserExist == null)
